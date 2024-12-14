@@ -11,8 +11,17 @@ config_version=5
 [application]
 
 config/name="Game"
+run/main_scene="res://object.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[autoload]
+
+global="*res://global.gd"
+
+[global_group]
+
+droppable="Place where item can be dropped"
 
 [rendering]
 

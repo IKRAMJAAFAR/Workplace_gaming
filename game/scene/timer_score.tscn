@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3 uid="uid://ba7e6qhr3red3"]
+
+[ext_resource type="Script" path="res://script/timer_score.gd" id="1_803q8"]
+
+[node name="Timer_Score" type="Node2D"]
+script = ExtResource("1_803q8")
+
+[node name="Timer" type="Timer" parent="."]
+
+[node name="TimeLabel" type="Label" parent="."]
+offset_left = -60.0
+offset_top = -59.0
+offset_right = -20.0
+offset_bottom = -36.0
+metadata/_edit_use_anchors_ = true
+
+[node name="ScoreLabel" type="Label" parent="."]
+offset_left = 56.0
+offset_top = -60.0
+offset_right = 96.0
+offset_bottom = -37.0
+metadata/_edit_use_anchors_ = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

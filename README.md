@@ -9,18 +9,18 @@
 #### **December 11: Basic Structure**
 - Create the main game scene in Godot:
     - [ ] **Irfan**: Design the background, bins, and basic UI layout.
-    - [ ] **Ikram**: Implement player interaction (dragging trash items).
+    - [X] **Ikram**: Implement player interaction (dragging trash items).
 - Set up a basic timer and score display:
-    - [ ] **Ikram**: Write the scripts for these features.
+    - [X] **Ikram**: Write the scripts for these features.
 
 #### **December 12: Core Gameplay**
 - Implement trash item spawning logic:
     - [ ] **Irfan**: Create art assets for trash items.
-    - [ ] **Ikram**: Code the logic for random item spawning and dragging.
+    - [X] **Ikram**: Code the logic for random item spawning and dragging.
 - Set up collision detection for bins:
-    - [ ] **Ikram**: Handle the collision logic.
+    - [X] **Ikram**: Handle the collision logic.
 - Add scoring logic for correct and incorrect sorting:
-    - [ ] **Ikram**: Develop the scoring system.
+    - [X] **Ikram**: Develop the scoring system.
 
 #### **December 13: Customer & Timer Mechanics**
 - Implement customer waiting mechanics:

@@ -1,0 +1,33 @@
+[gd_scene load_steps=3 format=3 uid="uid://cu4sg4g6yvef8"]
+
+[ext_resource type="PackedScene" uid="uid://cutbydldkvfth" path="res://scene/trash.tscn" id="1_wanjl"]
+[ext_resource type="Script" path="res://script/timer_score.gd" id="2_amx52"]
+
+[node name="Game" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(3, 4)
+
+[node name="Trash" parent="." instance=ExtResource("1_wanjl")]
+position = Vector2(88, 1)
+
+[node name="Timer_Score" type="Node2D" parent="."]
+rotation = -0.214938
+script = ExtResource("2_amx52")
+
+[node name="Timer" type="Timer" parent="Timer_Score"]
+
+[node name="TimeLabel" type="Label" parent="Timer_Score"]
+offset_left = -60.0
+offset_top = -59.0
+offset_right = -20.0
+offset_bottom = -36.0
+rotation = 0.156473
+metadata/_edit_use_anchors_ = true
+
+[node name="ScoreLabel" type="Label" parent="Timer_Score"]
+offset_left = 56.0
+offset_top = -60.0
+offset_right = 96.0
+offset_bottom = -37.0
+metadata/_edit_use_anchors_ = true

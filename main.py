@@ -1,92 +1,153 @@
 import pygame
-from trashItem import TrashItem
-from bins import create_bins, draw_bins, check_collision
-from scoring import update_score
-from customer import Customer
+import sys
+import csv
+import pandas as pd
 
 
 # Initialize Pygame
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
+pygame.display.set_caption("Circular Tycoon")
 clock = pygame.time.Clock()
 
-customers = [
-    Customer("assets\\untitledcustomer1.png", (50, 100), 10000),  # Waits for 10 seconds
-    Customer("assets\\untitledcustomer1.png", (50, 200), 15000),  # Waits for 15 seconds
-]
-def draw_customers_and_timers(screen, customers, font):
-    for customer in customers:
-        customer.draw(screen)
-        customer.draw_timer(screen, font)
+# Colors
+DARK_GREEN = (0, 100, 0)
+WHITE = (255, 255, 255)
+LIGHT_GREEN = (50, 205, 50)
+DARK_BLUE = (0,0,139)
+BLACK = (0,0,0)
 
-# Timer and score
-start_time = pygame.time.get_ticks()
-time_limit = 60000  # 1 minute
-score = 0
-font = pygame.font.Font(None, 36)
+# Fonts
+font_title = pygame.font.Font(None, 100)  # Title font
+font_button = pygame.font.Font(None, 50)  # Button font
+font_text = pygame.font.Font(None, 36)
 
-# Create trash items and bins
-trash_items = [
-    TrashItem("assets\\trash_item.png", 800, 600),
-    TrashItem("assets\\untitled1.png", 800, 600),
-]
-bins = create_bins()
+# Button Dimensions
+button_width = 200
+button_height = 80
+button_x = (800 - button_width) // 2
+button_y = 400
 
-def draw_timer_and_score(screen, time_remaining, score):
-    timer_text = font.render(f"Time: {time_remaining // 1000}s", True, (0, 0, 0))
-    screen.blit(timer_text, (10, 10))
+# Function to read items from a CSV file
+def read_csv_items(filename):
+    items = []
+    with open(filename, mode='r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            items.append({
+                "Item": row["Item"], 
+                "Quantity": int(row["Quantity"]), 
+                "Price": float(row["Price_(RM)"])
+            })
+    return items
 
-    score_text = font.render(f"Score: {score}", True, (0, 0, 0))
-    screen.blit(score_text, (10, 50))
 
-running = True
-level = 1
+# Tutorial/Instruction Screen Function
+def show_instructions(items):
+    running = True
+    selected_items = {}  # To store user's selections
+    total_price = 0  # Initialize total price
 
-while running:
-    screen.fill((255, 255, 255))  # Clear screen
+    while running:
+        screen.fill(WHITE)  # Background color
 
-    # Draw bins
-    draw_bins(screen, bins)
+        # Display Title
+        title_text = font_title.render("Instructions", True, DARK_BLUE)
+        screen.blit(title_text, (250, 50))
 
-    # Handle events
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+        # Placeholder for instructions (can add pictures later)
+        instructions_text = font_text.render("1. Choose items to buy.", True, BLACK)
+        instructions_text2 = font_text.render("2. Press ENTER to calculate total.", True, BLACK)
+        screen.blit(instructions_text, (50, 150))
+        screen.blit(instructions_text2, (50, 200))
 
-        for trash in trash_items:
-            trash.handle_event(event)
-            if event.type == pygame.MOUSEBUTTONUP and not trash.dragging:
-                bin_index = check_collision(trash, bins)
-                if bin_index != -1:
-                    score = update_score(trash, bin_index, score)
+        # Display Available Items
+        y_offset = 250
+        for item in items:
+            item_text = font_text.render(
+                f"{item['Item']} (x{item['Quantity']}) - RM{item['Price']:.2f}",
+                True,
+                BLACK
+            )
+            screen.blit(item_text, (50, y_offset))
+            y_offset += 40
 
-    # Update customers and check for timeout
-    for customer in customers:
-        if customer.left:
-            print("Customer left! Game over.")
-            running = False  # End game if a customer leaves
+
+        # Event Handling
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:  # On Enter, calculate total price
+                    total_price = sum(count * item['Price'] for item, count in selected_items.items())
+                    running = False  # Exit the instructions screen
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # Placeholder: Detect clicks to select items (future enhancement)
+                pass
+
+        # Input logic (for item quantities)
+        # Example: (future improvement can include better UI for item selection)
+        for item in items:
+            if item['Item'] not in selected_items:
+                selected_items[item['Item']] = 1  # Default quantity for now
+
+        # Update Screen
+        pygame.display.flip()
+        clock.tick(60)
+
+    return total_price
+
+def show_cover_title():
+    running = True
+    while running:
+        screen.fill(DARK_GREEN)  # Set background to dark green
+
+        # Render title text
+        title_text = font_title.render("Circular Tycoon", True, WHITE)
+        title_rect = title_text.get_rect(center=(400, 200))  # Center the title
+        screen.blit(title_text, title_rect)
+
+        # Draw play button
+        mouse_x, mouse_y = pygame.mouse.get_pos()  # Get mouse position
+
+        # Check if mouse is over the button
+        if button_x <= mouse_x <= button_x + button_width and button_y <= mouse_y <= button_y + button_height:
+            button_color = LIGHT_GREEN  # Highlight button on hover
         else:
-            customer.update()
+            button_color = WHITE
 
-    # Draw customers and timers
-    draw_customers_and_timers(screen, customers, font)
+        # Draw the button
+        pygame.draw.rect(screen, button_color, (button_x, button_y, button_width, button_height))
+        play_text = font_button.render("Play", True, DARK_GREEN)
+        play_text_rect = play_text.get_rect(center=(button_x + button_width // 2, button_y + button_height // 2))
+        screen.blit(play_text, play_text_rect)
 
-    # Check level progression
-    if score >= level * 50:  # Level up every 50 points
-        level += 1
-        update_game_timer(level)
-        print(f"Level up! Current level: {level}")
+        # Event handling
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if button_x <= mouse_x <= button_x + button_width and button_y <= mouse_y <= button_y + button_height:
+                    running = False  # Exit cover title to start the game
 
-    # Draw trash items
-    for trash in trash_items:
-        trash.draw(screen)
+        # Update the screen
+        pygame.display.flip()
+        clock.tick(60)
 
-    # Draw timer and score
-    elapsed_time = pygame.time.get_ticks() - start_time
-    time_remaining = max(0, time_limit - elapsed_time)
-    draw_timer_and_score(screen, time_remaining, score)
 
-    pygame.display.flip()
-    clock.tick(60)
+# Main function to test the title screen
+def main():
+    while True:
+        show_cover_title()
+        items = read_csv_items("items.csv")  # Load items from CSV
+        total_price = show_instructions(items)
+        print("Game Starts!")  # Replace this with your actual game loop
 
-pygame.quit()
+
+if __name__ == "__main__":
+    main()
+
+

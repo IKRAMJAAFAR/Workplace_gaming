@@ -67,6 +67,7 @@ def gameplay(player_id, original_price):
         # Timer Countdown
         timer -= 1 / 60  # Reduce by ~1 second per frame at 60 FPS
         if timer <= 0:
+            # Game Over text at the center then delay for 5 seconds
             running = False  # End game when timer reaches 0
 
         # Draw Trash

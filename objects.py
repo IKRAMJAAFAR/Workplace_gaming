@@ -1,19 +1,19 @@
 import random
 
-plastic_trash = []
-plastic_bin = ""
-aluminium_trash = []
-aluminium_bin = ""
-paper_trash = []
-paper_bin = ""
-waste_trash = []
-waste_bin = ""
+plastic_trash = [f'plastic-{i}' for i in range(1,4)]
+plastic_bin = "plastic"
+aluminium_trash = [f'alu-{i}' for i in range(1,4)]
+aluminium_bin = "aluminium"
+paper_trash = [f'paper-{i}' for i in range(1,4)]
+paper_bin = "paper"
+waste_trash = [f'waste-{i}' for i in range(1,4)]
+waste_bin = "waste"
 
 class Trash():
 
     def __init__(self, catergory:str, wait_time:int):
         self.catergory = catergory
-        self.sprites = self.get_sprites()
+        self.sprites = "assets\\" + self.get_sprites() + "\\.png"
         self.wait_time = wait_time
 
     def get_sprites(self):
@@ -31,7 +31,7 @@ class Bin():
 
     def __init__(self, catergory:str):
         self.catergory = catergory
-        self.sprites = self.get_sprites()
+        self.sprites = "assets\\" + self.get_sprites() + "\\.png"
     
     def get_sprites(self):
         if self.catergory == "Plastic":

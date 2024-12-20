@@ -13,12 +13,17 @@ clock = pygame.time.Clock()
 
 # Main function to test the title screen
 def main():
+    id_player = 0 + 1 # Please change the first number that aligns with the number of rows in the leaderboard.csv
+    id_order = 0 + 1 # Please change the first number that aligns with the number of rows in the order.csv
     while True:
+        id = [id_order, id_player]
         cover.main()
         tutorial.main()
-        total_price, selected_item = inputting.main()
-        game.main(total_price)
-        res.main() # Insert discounted_price and selected_item as parameters here
+        total_price, selected_item, isPlaying = inputting.main()
+        score, result_price = game.main(total_price) if isPlaying else 0,total_price
+        res.main(score, result_price, selected_item, isPlaying) # Insert discounted_price and selected_item as parameters here
+        id_player += 1
+        id_order += 1
 
 
 if __name__ == "__main__":

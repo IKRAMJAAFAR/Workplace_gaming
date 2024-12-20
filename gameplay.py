@@ -1,6 +1,6 @@
-import pygame
 import random
-import sys
+import pygame
+from objects import Trash, Bin
 
 # Initialize Pygame
 pygame.init()
@@ -12,128 +12,114 @@ pygame.display.set_caption("Trash Sorting Game")
 clock = pygame.time.Clock()
 
 # Colors
-BACKGROUND_A = (173, 216, 230)  # Light Blue for gameplay
-BACKGROUND_B = (255, 248, 220)  # Light Yellow for stats
+BACKGROUND = (173, 216, 230)  # Light Blue
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
 
 # Fonts
-font_title = pygame.font.Font(None, 60)
 font_text = pygame.font.Font(None, 36)
 
-# Constants
-SLOTS = 3
-SLOTSCOORDINATE = [(10,10),(210,10),(410,10)]
-BINS = 4
-TIMER_LIMIT = 60  # In seconds
+# Fixed Bin Coordinates
+BIN_COORDINATES = [
+    (300, 400),  # Bin 1
+    (400, 400),  # Bin 2
+    (300, 500),  # Bin 3
+    (400, 500),  # Bin 4
+]
 
-# Game Variables
-score = 0
-time_remaining = TIMER_LIMIT
-trash_items = []
-bins = []
-dragging_item = None
+# Randomized Trash Placement within Screen Bounds
+def generate_random_coordinates():
+    x = random.randint(50, WIDTH - 50)
+    y = random.randint(50, HEIGHT - 150)  # Keep trash away from bottom UI area
+    return x, y
 
-# Load Images (replace placeholders with actual images)
-bin_images = [pygame.Surface((100, 100)) for _ in range(BINS)]
-for bin_img in bin_images:
-    bin_img.fill(GREEN)
+# Initialize Bins
+bins = [
+    Bin("Plastic"),
+    Bin("Aluminium"),
+    Bin("Paper"),
+    Bin("Waste"),
+]
 
-trash_images = [pygame.Surface((50, 50)) for _ in range(SLOTS)]
-for trash_img in trash_images:
-    trash_img.fill(RED)
+# Place bins at fixed coordinates
+for i, bin_obj in enumerate(bins):
+    bin_obj.x, bin_obj.y = BIN_COORDINATES[i]  # Add x, y attributes to Bin objects
 
-# Rectangles
-trash_slots = [pygame.Rect(50 + i * 60, 100 if i < 4 else 400, 50, 50) for i in range(SLOTS)]
-bin_slots = [pygame.Rect(WIDTH // 2 - 150 + i * 100, HEIGHT // 2 - 50, 100, 100) for i in range(BINS)]
+# Initialize Trash
+trash_categories = ["Plastic", "Aluminium", "Paper", "Waste"]
+trash_objects = [
+    Trash(category, wait_time=random.randint(3, 6)) for category in trash_categories
+]
 
-# Random Trash Assignment
-def generate_trash_items():
-    return [{"type": random.randint(0, BINS - 1), "rect": trash_slots[i]} for i in range(SLOTS)]
+# Assign random coordinates to trash objects
+for trash in trash_objects:
+    trash.x, trash.y = generate_random_coordinates()  # Add x, y attributes to Trash objects
 
-trash_items = generate_trash_items()
-
-# Timer Function
-def update_timer():
-    global time_remaining
-    if time_remaining > 0:
-        time_remaining -= 1 / 60
-
-# Game Loop
-def game_loop(price_input):
-    global score, price, dragging_item, trash_items
-    price = price_input
-
+# Gameplay Function
+def gameplay(player_id, original_price):
+    score = 0
+    timer = 60  # 60 seconds timer
     running = True
+
     while running:
-        screen.fill(WHITE)
+        screen.fill(BACKGROUND)
 
-        # Split Screen Layout
-        pygame.draw.rect(screen, BACKGROUND_A, (0, 0, WIDTH*3 // 4, HEIGHT))
-        pygame.draw.rect(screen, BACKGROUND_B, (WIDTH*3 // 4, 0, WIDTH // 4, HEIGHT))
+        # Timer Countdown
+        timer -= 1 / 60  # Reduce by ~1 second per frame at 60 FPS
+        if timer <= 0:
+            running = False  # End game when timer reaches 0
 
-        # Display Score, Price, Timer
-        score_text = font_text.render(f"Score: {score}", True, BLACK)
-        timer_text = font_text.render(f"Time: {int(time_remaining)}s", True, BLACK)
-        price_text = font_text.render(f"Price: RM{price:.2f}", True, BLACK)
-        screen.blit(score_text, (WIDTH*3 // 4 + 10, 50))
-        screen.blit(timer_text, (WIDTH*3 // 4 + 10, 100))
-        screen.blit(price_text, (WIDTH*3 // 4 + 10, 150))
-
-        # Update Timer
-        update_timer()
-        if time_remaining <= 0:
-            running = False
+        # Draw Trash
+        for trash in trash_objects:
+            pygame.draw.rect(screen, (255, 105, 97), (trash.x, trash.y, 40, 40))  # Draw trash as red squares
+            trash_label = font_text.render(trash.catergory, True, BLACK)
+            screen.blit(trash_label, (trash.x, trash.y - 20))
 
         # Draw Bins
-        for i, bin_slot in enumerate(bin_slots):
-            screen.blit(bin_images[i], bin_slot)
+        for bin_obj in bins:
+            pygame.draw.rect(screen, (144, 238, 144), (bin_obj.x, bin_obj.y, 60, 60))  # Draw bins as green squares
+            bin_label = font_text.render(bin_obj.catergory, True, BLACK)
+            screen.blit(bin_label, (bin_obj.x, bin_obj.y - 20))
 
-        # Draw Trash Items
-        for item in trash_items:
-            if item != dragging_item:  # Don't draw the item being dragged
-                screen.blit(trash_images[item["type"]], item["rect"])
-
-        # Dragging Logic
-        if dragging_item:
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            dragging_item["rect"].center = (mouse_x, mouse_y)
-            screen.blit(trash_images[dragging_item["type"]], dragging_item["rect"])
+        # Draw UI
+        score_text = f"Score: {score}"
+        timer_text = f"Timer: {int(timer)}s"
+        price_text = f"Price: RM {original_price:.2f}"
+        screen.blit(font_text.render(score_text, True, BLACK), (600, 450))
+        screen.blit(font_text.render(timer_text, True, BLACK), (600, 500))
+        screen.blit(font_text.render(price_text, True, BLACK), (600, 550))
 
         # Event Handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                sys.exit()
-
+                exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                # Check if any trash item is clicked
-                for item in trash_items:
-                    if item["rect"].collidepoint(event.pos):
-                        dragging_item = item
-                        break
-
-            elif event.type == pygame.MOUSEBUTTONUP:
-                if dragging_item:
-                    # Check if dropped over a bin
-                    for i, bin_slot in enumerate(bin_slots):
-                        if bin_slot.colliderect(dragging_item["rect"]):
-                            if dragging_item["type"] == i:  # Correct bin
+                pos = pygame.mouse.get_pos()
+                # Check for trash-bin collisions
+                for trash in trash_objects:
+                    trash_rect = pygame.Rect(trash.x, trash.y, 40, 40)
+                    for bin_obj in bins:
+                        bin_rect = pygame.Rect(bin_obj.x, bin_obj.y, 60, 60)
+                        if trash_rect.colliderect(bin_rect):
+                            if bin_obj.check_trash(trash):  # Correct bin
                                 score += 10
-                                price -= 1.00  # Example price deduction
-                            else:  # Incorrect bin
-                                score -= 5
-                            # Reset the slot with a new item
-                            dragging_item["type"] = random.randint(0, BINS - 1)
-                            dragging_item["rect"].topleft = trash_slots[trash_items.index(dragging_item)].topleft
-                            break
-                    dragging_item = None
+                                trash.x, trash.y = generate_random_coordinates()  # Respawn trash
+                            else:
+                                score -= 5  # Penalty for wrong bin
 
         # Refresh Screen
         pygame.display.flip()
         clock.tick(60)
 
-def main(price_input):
-    game_loop(price_input)
+    return score
+
+def main(player_id, original_price):
+    return gameplay(player_id, original_price)
+
+# Main Function
+if __name__ == "__main__":
+    player_id = "Player01"
+    original_price = 50.0
+    final_score = main(player_id, original_price)
+    print(f"Final Score: {final_score}")

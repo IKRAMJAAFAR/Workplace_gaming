@@ -102,10 +102,8 @@ def show_result(score, total_price):
         clock.tick(60)
 
 # Main Function to Test Result Screen
-def main():
-    score = 280  # Example score from gameplay
-    total_price = 75.50  # Example discounted price
-    show_result(score, total_price)
+def main(score, result_price, selected_item, isPlaying):
+    show_result(score, result_price)
 
 if __name__ == "__main__":
     main()

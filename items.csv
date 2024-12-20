@@ -1,4 +1,5 @@
-Item,Quantity,Price_(RM)
-Shirt, 10, 15
-Hat, 5, 10
-Book, 20, 5
+Item_Id,Item,Quantity_Left,Price_(RM)
+0,Man's Top, 10, 15
+1,Woman's Top, 5, 10
+2,Book, 20, 5
+3,Water Bottle, 20, 5

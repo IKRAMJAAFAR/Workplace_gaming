@@ -1,6 +1,6 @@
 import pygame
 import pandas as pd
-global total_price, selected
+global total_price, selected, play_game
 
 # Initialize Pygame
 pygame.init()
@@ -15,6 +15,7 @@ clock = pygame.time.Clock()
 BACKGROUND = (200, 255, 200)  # Light Green
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+GRAY = (150, 150, 150)
 
 # Fonts
 font_text = pygame.font.Font(None, 36)
@@ -26,23 +27,30 @@ def load_items(csv_file):
 
 # Button Class
 class Button:
-    def __init__(self, x, y, w, h, text, callback):
+    def __init__(self, x, y, w, h, text, callback, toggle=False):
         self.rect = pygame.Rect(x, y, w, h)
         self.text = text
         self.callback = callback
+        self.toggle = toggle
+        self.active = False
 
     def draw(self):
-        pygame.draw.rect(screen, WHITE, self.rect)
+        color = GRAY if self.toggle and self.active else WHITE
+        pygame.draw.rect(screen, color, self.rect)
         pygame.draw.rect(screen, BLACK, self.rect, 2)
         text_surf = font_text.render(self.text, True, BLACK)
         screen.blit(text_surf, text_surf.get_rect(center=self.rect.center))
 
     def check_click(self, pos):
-        return self.callback() if self.rect.collidepoint(pos) else None
+        if self.rect.collidepoint(pos):
+            if self.toggle:
+                self.active = not self.active
+            return self.callback()
 
 # Quantity Selection Logic
 def increase_quantity(index):
-    selected_quantities[index] += 1
+    if selected_quantities[index] < items[index]["Quantity_Left"]:
+        selected_quantities[index] += 1
 
 def decrease_quantity(index):
     if selected_quantities[index] > 0:
@@ -58,11 +66,20 @@ selected_quantities = [0] * len(items)
 
 # Create Buttons
 buttons = []
-y_offset = 150
+y_offset = 150 - 100
 for i, item in enumerate(items):
     buttons.append(Button(500, y_offset, 40, 40, "-", lambda i=i: decrease_quantity(i)))
     buttons.append(Button(600, y_offset, 40, 40, "+", lambda i=i: increase_quantity(i)))
     y_offset += 50
+
+# Play Game Checkbox
+play_game = False
+def toggle_play_game():
+    global play_game
+    play_game = not play_game
+
+checkbox_button = Button(50, 500 - 100, 30, 30, "", toggle_play_game, toggle=True)
+checkbox_label = "Check to play the game"
 
 # Play Button Callback
 def prepare_results():
@@ -71,22 +88,23 @@ def prepare_results():
     total_price = calculate_total_price()
     return "gameplay"
 
-play_button = Button(300, 500, 200, 50, "Play", prepare_results)
+play_button = Button(300, 550 - 50, 200, 50, "Play", prepare_results)
 
 # Quantity Selection Screen
 def quantity_screen():
-    global selected, total_price
+    global selected, total_price, play_game
     selected = []  # Store selected items
     total_price = 0.0  # Store total price
+    play_game = False  # Initialize play game as False
 
     running = True
     while running:
         screen.fill(BACKGROUND)
 
         # Draw Items and Quantities
-        y_offset = 150
+        y_offset = 150 - 100
         for i, item in enumerate(items):
-            item_text = f"{item['Item']} (x{item['Quantity']})"
+            item_text = f"{item['Item']} (x{item['Quantity_Left']})"
             item_surf = font_text.render(item_text, True, BLACK)
             screen.blit(item_surf, (50, y_offset))
             quantity_text = font_text.render(str(selected_quantities[i]), True, BLACK)
@@ -100,7 +118,12 @@ def quantity_screen():
         # Draw Total Price
         total_price_text = f"Total Price: RM {calculate_total_price():.2f}"
         total_price_surf = font_text.render(total_price_text, True, BLACK)
-        screen.blit(total_price_surf, (50, 450))
+        screen.blit(total_price_surf, (50, 450 - 100))
+
+        # Draw Checkbox and Label
+        checkbox_button.draw()
+        checkbox_label_surf = font_text.render(checkbox_label, True, BLACK)
+        screen.blit(checkbox_label_surf, (90, 500 - 100))
 
         # Draw Play Button
         play_button.draw()
@@ -113,6 +136,7 @@ def quantity_screen():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 for button in buttons:
                     button.check_click(event.pos)
+                checkbox_button.check_click(event.pos)
                 if play_button.check_click(event.pos) == "gameplay":
                     total_price = calculate_total_price()
                     selected = [
@@ -126,15 +150,15 @@ def quantity_screen():
         pygame.display.flip()
         clock.tick(60)
 
-    return total_price, selected
+    return total_price, selected, play_game
 
 # Main Function
 def main():
-    total_price, selected = quantity_screen()
+    total_price, selected, play_game = quantity_screen()
     print("Total Price:", total_price)
     print("Selected Items:", selected)
-    return total_price, selected
+    print("Play Game:", play_game)
+    return total_price, selected, play_game
 
 if __name__ == "__main__":
     main()
-

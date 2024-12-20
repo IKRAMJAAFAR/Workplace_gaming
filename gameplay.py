@@ -24,14 +24,14 @@ font_title = pygame.font.Font(None, 60)
 font_text = pygame.font.Font(None, 36)
 
 # Constants
-SLOTS = 8
+SLOTS = 3
+SLOTSCOORDINATE = [(10,10),(210,10),(410,10)]
 BINS = 4
 TIMER_LIMIT = 60  # In seconds
 
 # Game Variables
 score = 0
 time_remaining = TIMER_LIMIT
-price = 100.00  # Example starting price
 trash_items = []
 bins = []
 dragging_item = None
@@ -62,8 +62,9 @@ def update_timer():
         time_remaining -= 1 / 60
 
 # Game Loop
-def game_loop():
+def game_loop(price_input):
     global score, price, dragging_item, trash_items
+    price = price_input
 
     running = True
     while running:
@@ -134,5 +135,5 @@ def game_loop():
         pygame.display.flip()
         clock.tick(60)
 
-# Run Game
-game_loop()
+def main(price_input):
+    game_loop(price_input)

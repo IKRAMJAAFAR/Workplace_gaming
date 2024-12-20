@@ -1,89 +1,94 @@
 import pygame
-import sys
-import csv
 
 # Initialize Pygame
 pygame.init()
-screen = pygame.display.set_mode((800, 600))
-pygame.display.set_caption("Instructions")
+
+# Screen Dimensions
+WIDTH, HEIGHT = 800, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Instructions Screen")
 clock = pygame.time.Clock()
 
-# Colors and Fonts
+# Colors
+BACKGROUND = (173, 216, 230)  # Light Blue
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-DARK_BLUE = (0, 0, 139)
-font_title = pygame.font.Font(None, 74)
+
+# Fonts
+font_title = pygame.font.Font(None, 60)
 font_text = pygame.font.Font(None, 36)
+font_button = pygame.font.Font(None, 50)  # Button font
 
-# Function to read items from a CSV file
-def read_csv_items(filename):
-    items = []
-    with open(filename, mode='r') as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            items.append({"Item": row["Item"], "Price": float(row["Price"])})
-    return items
+# Button Class
+x = """
+class Button:
+    def __init__(self, x, y, w, h, text, callback):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.text = text
+        self.callback = callback
 
-# Tutorial/Instruction Screen Function
-def show_instructions(items):
+    def draw(self):
+        pygame.draw.rect(screen, WHITE, self.rect)
+        pygame.draw.rect(screen, BLACK, self.rect, 2)
+        text_surf = font_text.render(self.text, True, BLACK)
+        screen.blit(text_surf, text_surf.get_rect(center=self.rect.center))
+
+    def check_click(self, pos):
+        if self.rect.collidepoint(pos):
+            self.callback()
+"""
+
+# Proceed Button Callback
+def go_to_quantity_screen():
+    return "quantity_screen"
+
+# Create Button
+button_x = 300
+button_y = 500
+button_width = 250
+button_height = 50
+
+# Instructions Screen Function
+def instructions_screen():
     running = True
-    selected_items = {}  # To store user's selections
-    total_price = 0  # Initialize total price
-
     while running:
-        screen.fill(WHITE)  # Background color
+        screen.fill(BACKGROUND)
 
-        # Display Title
-        title_text = font_title.render("Instructions", True, DARK_BLUE)
-        screen.blit(title_text, (250, 50))
+        # Draw Instructions
+        instructions = [
+            "1. Follow the steps to play the game.",
+            "2. Adjust quantities of items as needed.",
+            "3. View the total price dynamically.",
+            "4. Click Play to begin the game.",
+            "5. Have fun sorting trash items!"
+        ]
+        for i, line in enumerate(instructions):
+            text_surf = font_text.render(line, True, BLACK)
+            screen.blit(text_surf, (50, 50 + i * 40))
 
-        # Placeholder for instructions (can add pictures later)
-        instructions_text = font_text.render("1. Choose items to buy.", True, BLACK)
-        instructions_text2 = font_text.render("2. Press ENTER to calculate total.", True, BLACK)
-        screen.blit(instructions_text, (50, 150))
-        screen.blit(instructions_text2, (50, 200))
+        mouse_x, mouse_y = pygame.mouse.get_pos()  # Get mouse position
+        in_button_x_region = button_x <= mouse_x <= button_x + button_width
+        in_button_y_region = button_y <= mouse_y <= button_y + button_height
 
-        # Display Available Items
-        y_offset = 250
-        for item in items:
-            item_text = font_text.render(f"{item['Item']} - ${item['Price']:.2f}", True, BLACK)
-            screen.blit(item_text, (50, y_offset))
-            y_offset += 40
+        # Draw the button
+        button_color = WHITE 
+        pygame.draw.rect(screen, button_color, (button_x, button_y, button_width, button_height))
+        play_text = font_button.render("I Understand", True, BLACK)
+        play_text_rect = play_text.get_rect(center=(button_x + button_width // 2, button_y + button_height // 2))
+        screen.blit(play_text, play_text_rect)
 
         # Event Handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:  # On Enter, calculate total price
-                    total_price = sum(count * item['Price'] for item, count in selected_items.items())
-                    running = False  # Exit the instructions screen
+                exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if in_button_x_region and in_button_y_region:
+                    running = False  # Exit cover title to start the game
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                # Placeholder: Detect clicks to select items (future enhancement)
-                pass
-
-        # Input logic (for item quantities)
-        # Example: (future improvement can include better UI for item selection)
-        for item in items:
-            if item['Item'] not in selected_items:
-                selected_items[item['Item']] = 1  # Default quantity for now
-
-        # Update Screen
+        # Refresh Screen
         pygame.display.flip()
         clock.tick(60)
 
-    return total_price
-
-# Main Function
 def main():
-    items = read_csv_items("items.csv")  # Load items from CSV
-    total_price = show_instructions(items)  # Show instructions and calculate price
-    print(f"Total Price: ${total_price:.2f}")  # Placeholder for gameplay transition
-
-    # Proceed to gameplay with total price
-    # replace with your game's main logic here
-
-if __name__ == "__main__":
-    main()
+    instructions_screen()

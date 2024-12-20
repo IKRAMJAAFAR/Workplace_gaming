@@ -27,7 +27,6 @@ def show_cover_title():
     running = True
     while running:
         screen.fill(DARK_GREEN)  # Set background to dark green
-
         # Render title text
         title_text = font_title.render("Circular Tycoon", True, WHITE)
         title_rect = title_text.get_rect(center=(400, 200))  # Center the title
@@ -35,9 +34,11 @@ def show_cover_title():
 
         # Draw play button
         mouse_x, mouse_y = pygame.mouse.get_pos()  # Get mouse position
+        in_button_x_region = button_x <= mouse_x <= button_x + button_width
+        in_button_y_region = button_y <= mouse_y <= button_y + button_height
 
         # Check if mouse is over the button
-        if button_x <= mouse_x <= button_x + button_width and button_y <= mouse_y <= button_y + button_height:
+        if in_button_x_region and in_button_y_region:
             button_color = LIGHT_GREEN  # Highlight button on hover
         else:
             button_color = WHITE
@@ -54,7 +55,7 @@ def show_cover_title():
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if button_x <= mouse_x <= button_x + button_width and button_y <= mouse_y <= button_y + button_height:
+                if in_button_x_region and in_button_y_region:
                     running = False  # Exit cover title to start the game
 
         # Update the screen
@@ -65,7 +66,6 @@ def show_cover_title():
 # Main function to test the title screen
 def main():
     show_cover_title()
-    print("Game Starts!")  # Replace this with your actual game loop
 
 
 if __name__ == "__main__":

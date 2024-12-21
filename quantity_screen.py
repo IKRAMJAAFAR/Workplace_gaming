@@ -129,12 +129,12 @@ def quantity_screen():
         # Draw Total Price
         total_price_text = f"Total Price: RM {calculate_total_price():.2f}"
         total_price_surf = font_text.render(total_price_text, True, BLACK)
-        screen.blit(total_price_surf, (50, 450 - 100))
+        screen.blit(total_price_surf, (50, 450))
 
         # Draw Checkbox and Label
         checkbox_button.draw()
         checkbox_label_surf = font_text.render(checkbox_label, True, BLACK)
-        screen.blit(checkbox_label_surf, (90, 500 - 100))
+        screen.blit(checkbox_label_surf, (90, 500))
 
         # Draw Input Box if Checkbox is Checked
         if play_game:

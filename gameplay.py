@@ -68,14 +68,14 @@ def append_to_leaderboard(player_id,initials, original_price, score, reduced_pri
 # Gameplay Function
 def gameplay(player_id,initials, original_price):
     score = 0
-    timer = 10  # 60 seconds timer
+    timer = 60  # 60 seconds timer
     running = True
     countdown = 3  # 3-second countdown
     trash_spawn_time = 0  # Time to spawn the next trash
     selected_trash = None  # Trash being dragged
 
     # Add initial trash
-    for _ in range(4):
+    for _ in range(8):
         category = random.choice(trash_categories)
         x, y = generate_random_coordinates()
         trash_objects.append(Trash(category, wait_time=0))
@@ -157,7 +157,7 @@ def gameplay(player_id,initials, original_price):
                                 correct_bin = True
                                 break
                     trash_objects.remove(selected_trash)  # Remove trash        
-                    score += 10 if correct_bin else -5
+                    score += 5 if correct_bin else -5
                     score = 0 if score < 0 else score
                     selected_trash = None  # Deselect trash
             elif event.type == pygame.MOUSEMOTION:

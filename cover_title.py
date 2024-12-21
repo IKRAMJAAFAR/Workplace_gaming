@@ -31,6 +31,9 @@ def show_cover_title():
         title_text = font_title.render("Cycle It Out!", True, WHITE)
         title_rect = title_text.get_rect(center=(400, 200))  # Center the title
         screen.blit(title_text, title_rect)
+        title_text = font_title.render("MiniGame", True, WHITE)
+        title_rect = title_text.get_rect(center=(400, 300))  # Center the title
+        screen.blit(title_text, title_rect)
 
         # Draw play button
         mouse_x, mouse_y = pygame.mouse.get_pos()  # Get mouse position

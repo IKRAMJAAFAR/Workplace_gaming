@@ -41,8 +41,8 @@ def main():
         tutorial.main()
         total_price, selected_item, isPlaying, initials = inputting.main()
         score, result_price = game.main(id_player,initials,total_price) if isPlaying else 0,total_price
-        res.main(id_order, id_player, score, result_price, selected_item, isPlaying) 
         board.main()
+        res.main(id_order, id_player, score, result_price, selected_item, isPlaying) 
         # Insert discounted_price and selected_item as parameters here
         # Player_ID is null when isPlaying is False
 

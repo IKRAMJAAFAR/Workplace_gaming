@@ -13,7 +13,7 @@ class Trash():
 
     def __init__(self, catergory:str, wait_time:int):
         self.catergory = catergory
-        self.sprites = "assets\\" + self.get_sprites() + "\\.png"
+        self.sprites = "assets\\" + self.get_sprites() + ".png"
         self.wait_time = wait_time
 
     def get_sprites(self):
@@ -31,7 +31,7 @@ class Bin():
 
     def __init__(self, catergory:str):
         self.catergory = catergory
-        self.sprites = "assets\\" + self.get_sprites() + "\\.png"
+        self.sprites = "assets\\" + self.get_sprites() + ".png"
     
     def get_sprites(self):
         if self.catergory == "Plastic":

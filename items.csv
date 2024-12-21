@@ -1,5 +1,6 @@
 Item_Id,Item,Quantity_Left,Price_(RM)
-0,Man's Top, 10, 15
-1,Woman's Top, 5, 10
-2,Book, 20, 5
-3,Water Bottle, 20, 5
+0,Man's Top,20,10
+1,Woman's Top,3,15
+2,Book,16,5
+3,Water Bottle,11,5
+4,Pants,5,10

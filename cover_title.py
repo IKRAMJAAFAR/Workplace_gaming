@@ -28,7 +28,7 @@ def show_cover_title():
     while running:
         screen.fill(DARK_GREEN)  # Set background to dark green
         # Render title text
-        title_text = font_title.render("Circular Tycoon", True, WHITE)
+        title_text = font_title.render("Cycle It Out!", True, WHITE)
         title_rect = title_text.get_rect(center=(400, 200))  # Center the title
         screen.blit(title_text, title_rect)
 

@@ -59,8 +59,13 @@ def instructions_screen():
             "1. Follow the steps to play the game.",
             "2. Adjust quantities of items as needed.",
             "3. View the total price dynamically.",
-            "4. Click Play to begin the game.",
-            "5. Have fun sorting trash items!"
+            "4. Click checkbox if want to play the game.",
+            "5. Click Play to begin the game.",
+            "6. Have fun sorting trash items!",
+            "Waste bin   (grey): Bananas, Plates, Gums",
+            "Plastic bin (yellow): Straws, Bottles, Utensils",
+            "Paper bin   (blue): Bags, Newspapers, Cups",
+            "Aluminium bin (green): Cans, Caps"
         ]
         for i, line in enumerate(instructions):
             text_surf = font_text.render(line, True, BLACK)
@@ -92,3 +97,6 @@ def instructions_screen():
 
 def main():
     instructions_screen()
+
+if __name__ == '__main__':
+    main()

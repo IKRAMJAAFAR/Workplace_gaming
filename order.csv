@@ -1,1 +1,1 @@
-Order_Id,Player_Id,Item_Id,Quantity_Taken,Method_Payment
+Order_Id,Item_Id,Quantity_Taken

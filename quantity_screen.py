@@ -1,5 +1,7 @@
 import pygame
 import pandas as pd
+
+# Global Variables
 global total_price, selected, play_game
 
 # Initialize Pygame
@@ -19,6 +21,7 @@ GRAY = (150, 150, 150)
 
 # Fonts
 font_text = pygame.font.Font(None, 36)
+font_input = pygame.font.Font(None, 32)
 
 # Load Items from CSV
 def load_items(csv_file):
@@ -38,8 +41,9 @@ class Button:
         color = GRAY if self.toggle and self.active else WHITE
         pygame.draw.rect(screen, color, self.rect)
         pygame.draw.rect(screen, BLACK, self.rect, 2)
-        text_surf = font_text.render(self.text, True, BLACK)
-        screen.blit(text_surf, text_surf.get_rect(center=self.rect.center))
+        if self.text:
+            text_surf = font_text.render(self.text, True, BLACK)
+            screen.blit(text_surf, text_surf.get_rect(center=self.rect.center))
 
     def check_click(self, pos):
         if self.rect.collidepoint(pos):
@@ -84,18 +88,25 @@ checkbox_label = "Check to play the game"
 # Play Button Callback
 def prepare_results():
     global selected, total_price
-    selected = [{"Item": items[i]["Item"], "Quantity": q} for i, q in enumerate(selected_quantities) if q > 0]
+    selected = [{"Item_Id": items[i]["Item_Id"], "Quantity": q} for i, q in enumerate(selected_quantities) if q > 0]
     total_price = calculate_total_price()
     return "gameplay"
 
 play_button = Button(300, 550 - 50, 200, 50, "Play", prepare_results)
 
+# Input Box for Initials
+input_box = pygame.Rect(90, 540, 200, 40)
+input_text = ""
+input_active = False
+
 # Quantity Selection Screen
 def quantity_screen():
-    global selected, total_price, play_game
+    global selected, total_price, play_game, input_text, input_active
     selected = []  # Store selected items
     total_price = 0.0  # Store total price
     play_game = False  # Initialize play game as False
+    input_text = ""  # Reset input text
+    input_active = False  # Input box is inactive initially
 
     running = True
     while running:
@@ -125,6 +136,13 @@ def quantity_screen():
         checkbox_label_surf = font_text.render(checkbox_label, True, BLACK)
         screen.blit(checkbox_label_surf, (90, 500 - 100))
 
+        # Draw Input Box if Checkbox is Checked
+        if play_game:
+            pygame.draw.rect(screen, WHITE, input_box)
+            pygame.draw.rect(screen, BLACK, input_box, 2)
+            input_text_surf = font_input.render(input_text, True, BLACK)
+            screen.blit(input_text_surf, (input_box.x + 5, input_box.y + 5))
+
         # Draw Play Button
         play_button.draw()
 
@@ -137,28 +155,43 @@ def quantity_screen():
                 for button in buttons:
                     button.check_click(event.pos)
                 checkbox_button.check_click(event.pos)
+                if input_box.collidepoint(event.pos) and play_game:
+                    input_active = True
+                else:
+                    input_active = False
                 if play_button.check_click(event.pos) == "gameplay":
                     total_price = calculate_total_price()
                     selected = [
-                        {"Item": items[i]["Item"], "Quantity": selected_quantities[i]}
+                        {
+                            "Item_Id": items[i]["Item_Id"], 
+                            "Item": items[i]["Item"],       # Include item name for clarity
+                            "Quantity": selected_quantities[i]
+                        }
                         for i in range(len(items))
                         if selected_quantities[i] > 0
                     ]
                     running = False
+            elif event.type == pygame.KEYDOWN:
+                if input_active:
+                    if event.key == pygame.K_BACKSPACE:
+                        input_text = input_text[:-1]
+                    else:
+                        input_text += event.unicode
 
         # Refresh Screen
         pygame.display.flip()
         clock.tick(60)
 
-    return total_price, selected, play_game
+    return total_price, selected, play_game, input_text
 
 # Main Function
 def main():
-    total_price, selected, play_game = quantity_screen()
+    total_price, selected, play_game, initials = quantity_screen()
     print("Total Price:", total_price)
     print("Selected Items:", selected)
     print("Play Game:", play_game)
-    return total_price, selected, play_game
+    print("Initials:", initials)
+    return total_price, selected, play_game, initials
 
 if __name__ == "__main__":
     main()
